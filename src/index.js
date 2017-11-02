@@ -4,6 +4,7 @@ import YTSearch from 'youtube-api-search';
 import VideoList from './components/video_list';
 
 import SearchBar from './components/search_bar';
+import VideoDetail from './components/video_detail';
 
 const API_KEY = 'AIzaSyAdF2sQYfZpOia19o4MoQo-WLRkS5OK2cU';
 
@@ -12,23 +13,34 @@ class App extends Component {
     super(props);
 
     this.state = {
-      videos: []
+      videos: [],
+      selectedVideo: null
     };
 
+    this.videoSearch('');
+  }
+
+  videoSearch (term) {
     YTSearch({
       key: API_KEY,
-      term: 'surfboards'
+      term: term
     }, (videos) => {
-      this.setState({ videos });
-      // this.setState({ videos: videos })
+      this.setState({
+        videos: videos,
+        selectedVideo: videos[0]
+      });
     });
   }
 
   render () {
     return (
       <div className='container'>
-        <SearchBar />
-        <VideoList videos={this.state.videos} />
+        <SearchBar onSearchTermChange={term => this.videoSearch(term)} />
+        <VideoDetail video={this.state.selectedVideo} />
+        <VideoList
+          onVideoSelect={selectedVideo => this.setState({ selectedVideo })}
+          videos={this.state.videos}
+        />
       </div>
     );
   }
